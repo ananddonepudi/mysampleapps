@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myaspnetapp
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: myaspnetapp
+  template:
+    metadata:
+      labels:
+        app: myaspnetapp
+    spec:
+      containers:
+      - name: myaspnetapp
+        image: <IMAGE_URI>   # Will be replaced by buildspec
+        ports:
+        - containerPort: 80

@@ -1,0 +1,70 @@
+version: 0.2
+
+env:
+  variables:
+    AWS_REGION: ap-south-1            # Change to your AWS region
+    IMAGE_REPO_NAME: mysampleapps     # Your ECR repo name
+    IMAGE_TAG: latest                 # Can also use `$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)`
+    EKS_CLUSTER_NAME: myEKScluster    # Your EKS cluster name
+    K8S_NAMESPACE: default            # Namespace in EKS
+    HELM_RELEASE_NAME: mysampleapps
+    HELM_CHART_PATH: ./helm/mysampleapps
+
+
+phases:
+  install:
+   
+      
+    commands:
+      - echo Installing kubectl v1.29.0...
+      - curl -LO "https://dl.k8s.io/release/v1.29.0/bin/linux/amd64/kubectl"
+      - chmod +x kubectl
+      - mv kubectl /usr/local/bin/
+      - kubectl version --client
+    
+        # Install Helm
+      - echo "Installing Helm..."
+      - curl -L https://get.helm.sh/helm-v3.15.2-linux-amd64.tar.gz -o helm.tar.gz
+      - tar -zxvf helm.tar.gz
+      - mv linux-amd64/helm /usr/local/bin/helm
+      - helm version
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - echo "Debugging CodeBuild cluster access..."
+      - aws sts get-caller-identity
+      - aws eks list-clusters
+      - echo $mysecret
+     
+      -  aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 344249396000.dkr.ecr.ap-south-1.amazonaws.com
+      - IMAGE_TAG=${CODEBUILD_BUILD_NUMBER}
+      - REPOSITORY_URI=$(aws ecr describe-repositories --repository-names $IMAGE_REPO_NAME --region $AWS_REGION --query 'repositories[0].repositoryUri' --output text)
+      - echo $REPOSITORY_URI
+      - echo Building started on `date`
+      - aws eks update-kubeconfig --region $AWS_REGION --name $EKS_CLUSTER_NAME
+      - echo "Testing kubeconfig after update..."
+      - cat ~/.kube/config
+      - kubectl config current-context
+      - echo "Checking current identity..."
+      - aws sts get-caller-identity
+      - kubectl get nodes
+
+  build:
+    commands:
+      - echo Building Docker image...
+      - docker build -t $IMAGE_REPO_NAME .
+      - docker tag $IMAGE_REPO_NAME:latest $REPOSITORY_URI:$IMAGE_TAG
+      - echo Pushing Docker image to ECR...
+      - docker push $REPOSITORY_URI:$IMAGE_TAG
+
+  post_build:
+    commands:
+      
+      - echo Deploying to EKS via Helm...
+      - helm upgrade --install $HELM_RELEASE_NAME $HELM_CHART_PATH --namespace $K8S_NAMESPACE  --set image.repository=$REPOSITORY_URI --set image.tag=$IMAGE_TAG
+ 
+
+artifacts:
+  files:
+    - '**/*'
+  discard-paths: yes

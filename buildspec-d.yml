@@ -1,0 +1,38 @@
+version: 0.2
+
+env:
+  variables:
+    AWS_REGION: ap-south-1          # Change to your AWS region
+    IMAGE_REPO_NAME: mysampleapps    # Your ECR repo name
+    IMAGE_TAG: latest               # Can be git commit ID for versioning
+    version_num: v1
+
+phases:
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - echo $IMAGE_REPO_NAME
+      - aws --version
+      - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 344249396000.dkr.ecr.ap-south-1.amazonaws.com
+      - IMAGE_TAG=${CODEBUILD_BUILD_NUMBER}
+      - REPOSITORY_URI=$(aws ecr describe-repositories --repository-names $IMAGE_REPO_NAME --region $AWS_REGION --query 'repositories[0].repositoryUri' --output text)
+      - echo $REPOSITORY_URI
+      - echo $version_num
+      - echo Build started on `date`
+
+  build:
+    commands:
+      - echo Building the Docker image...
+      - docker build -t $IMAGE_REPO_NAME .
+      - docker tag $IMAGE_REPO_NAME:latest $REPOSITORY_URI:$IMAGE_TAG
+
+  post_build:
+    commands:
+      - echo Pushing the Docker image to ECR...
+      - docker push $REPOSITORY_URI:$IMAGE_TAG
+      - echo Build completed on `date`
+
+artifacts:
+  files:
+    - '**/*'
+  discard-paths: yes

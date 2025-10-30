@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "mysampleapps.fullname" . }}
+  labels:
+    app: {{ include "mysampleapps.name" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "mysampleapps.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "mysampleapps.name" . }}
+    spec:
+      containers:
+        - name: {{ include "mysampleapps.name" . }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.service.targetPort }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}

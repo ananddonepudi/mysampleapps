@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "mysampleapps.fullname" . }}
+  labels:
+    app: {{ include "mysampleapps.name" . }}
+spec:
+  type: {{ .Values.service.type }}
+  selector:
+    app: {{ include "mysampleapps.name" . }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.targetPort }}

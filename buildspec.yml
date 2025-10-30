@@ -1,0 +1,30 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      dotnet: 6.0  # Change to 7.0 or your target version
+    commands:
+      - echo "Installing dependencies..."
+      - dotnet restore
+
+  pre_build:
+    commands:
+      - echo "Pre-build stage..."
+      - dotnet build --configuration Release
+
+  build:
+    commands:
+      - echo "Publishing application..."
+      - dotnet publish -c Release -o ./publish
+
+  post_build:
+    commands:
+      - echo "Zipping published files..."
+      - zip -r myapp.zip ./publish
+      - echo "Build completed successfully."
+
+artifacts:
+  files:
+    - myapp.zip
+  discard-paths: yes
