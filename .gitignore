@@ -1,0 +1,9 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs/mysampleapps
+/.vs/ProjectEvaluation
+/obj/Release/net6.0
+/.vs
+/buildspec.yml
