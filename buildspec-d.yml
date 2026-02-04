@@ -3,7 +3,7 @@ version: 0.2
 env:
   variables:
     AWS_REGION: ap-south-1          # Change to your AWS region
-    IMAGE_REPO_NAME: mysampleapps    # Your ECR repo name
+    IMAGE_REPO_NAME: demosrepo    # Your ECR repo name
     IMAGE_TAG: latest               # Can be git commit ID for versioning
     version_num: v1
 
@@ -13,6 +13,7 @@ phases:
       - echo Logging in to Amazon ECR...
       - echo $IMAGE_REPO_NAME
       - aws --version
+     
       - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 344249396000.dkr.ecr.ap-south-1.amazonaws.com
       - IMAGE_TAG=${CODEBUILD_BUILD_NUMBER}
       - REPOSITORY_URI=$(aws ecr describe-repositories --repository-names $IMAGE_REPO_NAME --region $AWS_REGION --query 'repositories[0].repositoryUri' --output text)
