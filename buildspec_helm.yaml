@@ -28,9 +28,9 @@ phases:
       - tar -zxvf helm.tar.gz
       - mv linux-amd64/helm /usr/local/bin/helm
       - helm version
-  pre_build:
-    commands:
-      - echo Logging in to Amazon ECR...
+pre_build:
+  commands:
+   - echo Logging in to Amazon ECR...
       - echo "Debugging CodeBuild cluster access..."
       - aws sts get-caller-identity
       - aws eks list-clusters
@@ -48,6 +48,7 @@ phases:
       - echo "Checking current identity..."
       - aws sts get-caller-identity
       - kubectl get nodes
+
 
   build:
     commands:
