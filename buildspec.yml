@@ -3,9 +3,11 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      dotnet: 7.0  # Change to 7.0 or your target version
+      dotnet: 8.0  # Change to 7.0 or your target version
     commands:
       - echo "Installing dependencies..."
+      - dotnet nuget locals all --clear
+      - rm -rf obj bin   
       - dotnet restore
       - echo "after restore"
 
