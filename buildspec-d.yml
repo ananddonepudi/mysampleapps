@@ -3,7 +3,7 @@ version: 0.2
 env:
   variables:
     AWS_REGION: ap-south-1          # Change to your AWS region
-    IMAGE_REPO_NAME: demosrepo    # Your ECR repo name
+    IMAGE_REPO_NAME: demorepo    # Your ECR repo name
     IMAGE_TAG: latest               # Can be git commit ID for versioning
     version_num: v1
 
