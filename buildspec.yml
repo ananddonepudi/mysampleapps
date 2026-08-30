@@ -13,7 +13,7 @@ phases:
 
   pre_build:
     commands:
-      - echo "Pre-build stage..."
+      - echo "Pre-build stage...aug30"
       - dotnet build --configuration Release
 
   build:
