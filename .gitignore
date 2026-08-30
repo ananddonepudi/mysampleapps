@@ -6,3 +6,8 @@
 /obj/Release/net6.0
 /obj/Debug/net6.0/mysampleapps.AssemblyInfo.cs
 /.gitignore
+/obj/Debug/net8.0/mysampleapps.AssemblyInfo.cs
+/obj/Debug/net8.0/mysampleapps.AssemblyInfoInputs.cache
+/obj/Debug/net8.0/mysampleapps.GeneratedMSBuildEditorConfig.editorconfig
+/obj/Debug/net8.0/rpswa.dswa.cache.json
+/.github/copilot-instructions.md
